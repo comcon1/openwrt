@@ -693,7 +693,7 @@ class ostat:
                 if (self.target - o2) > self.THRESHOLD_O2_LOWER:
                     self.o2_fill(1)
 
-            self.off_dtime = 50./self.target + 5*(o2-self.target)
+            self.off_dtime = 50./(self.target+0.1) + 5*(o2-self.target)
  
         if self.n2_fill_Flag:
             if _dtime < self.off_dtime:
