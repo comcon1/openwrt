@@ -647,7 +647,10 @@ class ostat:
         self.off_dtime = 0
         self.n2_fill_Flag = None
         self.o2_fill_Flag = None
+        # History of O2 trusted values
         self.o2_history = []
+        # History of O2 non-trusted values
+        self.o2_failhistory = []
 
     def set(self, o2):
         self.target = o2
@@ -668,9 +671,22 @@ class ostat:
                 omean = sum(self.o2_history)/5.
                 if abs(o2 - omean) < 0.5:
                     self.o2_history = self.o2_history[1:] + [o2]
+                    self.o2_failhistory = []
                 else:
-                    sys.stderr.write(hts() + ": OST: O2 value failed - %.1f!\n" % o2)
-                    o2 = self.o2_history[-1] # getting previous solid one
+                    if len(self.o2_failhistory) < 5:
+                        self.o2_failhistory.append(o2)
+                        sys.stderr.write(hts() + ": OST: O2 value failed - %.1f - forming fail history!\n" % o2)
+                        o2 = self.o2_history[-1] # getting previous solid one
+                    else:
+                        fmean = sum(self.o2_failhistory)/len(self.o2_failhistory)
+                        if abs(o2 - fmean) < 0.5:
+                            self.o2_history = self.o2_failhistory[:4] + [o2]
+                            self.o2_failhistory = []
+                        else:
+                            self.o2_failhistory.append(o2)
+                            sys.stderr.write(hts() + ": OST: O2 value failed - %.1f - crucial disballance!\n" % o2)
+                            o2 = self.o2_history[-1] # getting previous solid one
+                            # TODO: after a while - abort the program with valves closed
         else:
             sys.stderr.write(hts() + ": OST: O2 sensor failed!\n")
             finishFlag = False
