@@ -672,7 +672,7 @@ class ostat:
             self.n2v.set(0)
             finishFlag = True
 
-        _dtime = (time() - self.stamp) % 30
+        _dtime = int(time() - self.stamp) % 30
 
         if finishFlag:
             return
@@ -714,8 +714,8 @@ class ostat:
         
         # debug output
         # TODO: remove after finalization
-        if self.target != -1 and (_dtime % 5 == 0):
-            self.errStamp('DBG', o2, dt)
+        if (self.target != -1) and (_dtime % 5 == 0):
+            self.errStamp('DBG',  o2 if haveValue else -1, _dtime)
 
     def n2_fill(self, _flag):
         if _flag:
@@ -733,15 +733,14 @@ class ostat:
 
     def errFill(self, _n2, _o2):
         sys.stderr.write("%s: OST: turn N2 %s, turn O2 %s\n" % \
-                hts(), "on" if _n2 else "off", "on" if _o2 else "off")
+                (hts(), "on" if _n2 else "off", "on" if _o2 else "off") )
 
     def errStamp(self, ws, o2, dt):
-        sys.stderr.write("%s: %3s: O2 %.1f, target %.1f, dtime: %d/%d, o2v %d, n2v %d, OF: %d, NF: %d\n" %
-                    (ws, hts(), o2 if haveValue else -1, self.target, dt, \
-                        self.off_dtime, self.o2v.get(), self.n2v.get(), \
-                        -1 if self.o2_fill_Flag is None else self.o2_fill_Flag, \
-                        -1 if self.n2_fill_Flag is None else self.n2_fill_Flag) )
-        pass
+        sys.stderr.write("%s: %3s: O2 %.1f, target %.1f, dtime: %2d/%2d, o2v %d, n2v %d, OF: %d, NF: %d\n" %
+                    (hts(), ws, o2, self.target, dt, \
+                     self.off_dtime, self.o2v.get(), self.n2v.get(), \
+                     -1 if self.o2_fill_Flag is None else self.o2_fill_Flag, \
+                     -1 if self.n2_fill_Flag is None else self.n2_fill_Flag) )
 
 
     def __str__(self):
