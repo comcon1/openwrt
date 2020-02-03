@@ -149,7 +149,10 @@ class tstat:
 			sys.stderr.write(hts() + (": TS4: %s\n" % self))
 
 	def __str__(self):
-		r = "Thermostat: %.2fC, " % self.temp
+		if self.temp > 0:
+			r = "Thermostat: %.2fC, " % self.temp
+		else:
+			r = "Thermostat: N/S, "
 		r += "T: %.2fC, " % self.tnow
 		r += "Heat: %d(%d), " % (self.heat.get(), self.heat_state)
 		r += "Thyst: %.2f, " % self.hyst
@@ -431,6 +434,8 @@ class http_serv:
 		w = a.split("=")
 		if w[0] == "ttemp":
 			try:
+				if w[1] == "":
+					w[1] = "-1"
 				ttemp = float(w[1])
 			except:
 				pass
@@ -441,7 +446,12 @@ class http_serv:
 				pass
 		elif w[0] == "ostat":
 			try:
-				self.ostat.set(float(w[1]))
+				if w[1] == "":
+					w[1] = "-1"
+				_w1 = float(w[1])
+				if _w1 < 0:
+					_w1 = -1
+				self.ostat.set(_w1)
 			except:
 				pass
 		elif w[0] == "threads":
