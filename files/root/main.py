@@ -488,14 +488,14 @@ Date: <input type="text" name="date" size="20" value="" id="fieldForDate">
 </form>'''
 		r += '''
 <form action="/ctl" method="get" style="font-size: 150%">
-Thermostat: <input type="number" step="0.1" name=ttemp>
+Thermostat: <input type="number" step="0.1" name="ttemp" value="{tstat_value}">
 <input type="submit" value="OK">
-</form>'''
+</form>'''.format(tstat_value = "" if (self.ostat.temp <= 0) else ("%.1f" % self.ostat.temp) )
 		r += '''
 <form action="/ctl" method="get" style="font-size: 150%">
-O2: <input type="number" step="0.1" name=ostat>
+O2: <input type="number" step="0.1" name="ostat" value="{ostat_value}">
 <input type="submit" value="OK">
-</form>'''
+</form>'''.format(ostat_value = "" if (self.ostat.target < 0) else ("%.1f" % self.ostat.target) )
 		r += '''
 <table><tr><td><h3>Pump:</h3></td>
 <td><form action="/ctl" method="get" style="font-size: 150%">
